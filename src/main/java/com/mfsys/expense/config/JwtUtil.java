@@ -37,12 +37,14 @@ public class JwtUtil {
     }
 
     // Validate token
-    public void validateToken(String token) throws JwtException {
-        Jwts.parserBuilder()
+    public Claims validateToken(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
-                .parseClaimsJws(token);
+                .parseClaimsJws(token)
+                .getBody();
     }
+
 
     // Extract email from token
     public String getEmailFromToken(String token) {

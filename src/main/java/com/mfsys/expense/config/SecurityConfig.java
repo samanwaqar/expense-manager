@@ -19,27 +19,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // Disable CSRF for API
                 .csrf(csrf -> csrf.disable())
 
-                // Stateless session, JWT only
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // ❗ FIX: prevent anonymous override issue
+                .anonymous(anonymous -> anonymous.disable())
 
-                // Authorize requests
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints (login/signup)
                         .requestMatchers(ByPassURL.PUBLIC_URLS).permitAll()
-
-                        // Admin-only endpoints
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
-
-                        // All other endpoints require authentication
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );
 
-        // Add JWT filter before UsernamePasswordAuthenticationFilter
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 }

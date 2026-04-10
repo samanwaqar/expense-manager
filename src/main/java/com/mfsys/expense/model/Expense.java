@@ -21,5 +21,20 @@ public class Expense {
     private String category;
     private Double amount;
 
+    private String receiptName;
+    private String receiptType;
+    private String receiptUrl;
+
+
+    private String status;
+
+    @Column(nullable = false)
+    private String userEmail;
+
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

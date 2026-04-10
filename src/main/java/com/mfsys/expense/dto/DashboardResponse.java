@@ -7,10 +7,9 @@ import java.util.Map;
 
 @Data
 @AllArgsConstructor
-public class DashboardDTO {
+public class DashboardResponse {
 
     private long totalExpenses;
     private double totalAmount;
     private Map<String, Double> categoryWiseAmount;
 }
-
