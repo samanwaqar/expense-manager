@@ -10,4 +10,6 @@ public interface AuthService {
     LoginResponse login(LoginRequest request);
 
     User signUp(SignUpRequest request);
+
+    LoginResponse refreshToken(String refreshToken);
 }

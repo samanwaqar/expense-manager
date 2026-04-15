@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,20 +15,25 @@ import java.util.Date;
 public class JwtUtil {
 
     private final Key key;
-    private final long jwtExpirationInMs = 3600000; // 1 hour
+    private final long jwtExpirationInMs;
 
-    public JwtUtil(@Value("${jwt.secret}") String secret) {
+    // ✅ clean constructor injection (BEST PRACTICE)
+    public JwtUtil(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.expiration}") long jwtExpirationInMs
+    ) {
         byte[] keyBytes = Base64.getDecoder().decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.jwtExpirationInMs = jwtExpirationInMs;
     }
 
-    // Generate token using only email
+    // Generate token
     public String generateToken(String email) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
-                .setSubject(email)  // email as subject
+                .setSubject(email)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -45,14 +49,8 @@ public class JwtUtil {
                 .getBody();
     }
 
-
-    // Extract email from token
+    // Extract email
     public String getEmailFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+        return validateToken(token).getSubject();
     }
 }

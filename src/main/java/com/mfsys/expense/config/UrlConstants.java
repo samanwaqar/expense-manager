@@ -6,6 +6,7 @@ public class UrlConstants {
 
     public static final String LOGIN = "/login";
     public static final String SIGNUP = "/sign-up";
+    public static final  String REFRESH_TOKEN="/refresh-token";
 
     public static final String EXPENSE = "/expenses";
     public static final String CREATE_EXPENSE = "/create";

@@ -15,7 +15,8 @@ import static com.mfsys.expense.config.UrlConstants.*;
 
 @RestController
 @RequestMapping(EXPENSE)
-public class ExpenseController {
+public class
+ExpenseController {
 
     private final ExpenseService service;
 

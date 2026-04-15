@@ -7,6 +7,9 @@ import com.mfsys.expense.model.User;
 import com.mfsys.expense.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
 import static com.mfsys.expense.config.UrlConstants.*;
 
 @RestController
@@ -24,5 +27,13 @@ public class AuthController {
     @PostMapping(SIGNUP)
     public User signUp(@RequestBody SignUpRequest request) {
         return authService.signUp(request);
+    }
+
+    @PostMapping(REFRESH_TOKEN)
+    public LoginResponse refreshToken(@RequestBody Map<String, String> request) {
+
+        String refreshToken = request.get("refreshToken");
+
+        return authService.refreshToken(refreshToken);
     }
 }
