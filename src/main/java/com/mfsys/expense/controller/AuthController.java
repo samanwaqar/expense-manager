@@ -5,7 +5,6 @@ import com.mfsys.expense.dto.LoginResponse;
 import com.mfsys.expense.dto.SignUpRequest;
 import com.mfsys.expense.model.User;
 import com.mfsys.expense.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -16,8 +15,11 @@ import static com.mfsys.expense.config.UrlConstants.*;
 @RequestMapping(AUTH)
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping(LOGIN)
     public LoginResponse login(@RequestBody LoginRequest request) {

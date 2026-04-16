@@ -15,4 +15,9 @@ public class UrlConstants {
     public static final String DELETE_EXPENSE = "/{id}";
     public static final String DASHBOARD = "/dashboard";
     public static final String MONTHLY_REPORT = "/monthly-report";
+
+    public static final String USER = "/user";
+    public static final String PROFILE = "/profile";
+    public static final String UPDATE_PROFILE = "/update-profile";
+
 }

@@ -3,6 +3,9 @@ import com.mfsys.expense.config.JwtUtil;
 import com.mfsys.expense.dto.LoginRequest;
 import com.mfsys.expense.dto.LoginResponse;
 import com.mfsys.expense.dto.SignUpRequest;
+import com.mfsys.expense.exception.IncorrectPasswordException;
+import com.mfsys.expense.exception.InvalidRefreshTokenException;
+import com.mfsys.expense.exception.UserNotFoundException;
 import com.mfsys.expense.model.User;
 import com.mfsys.expense.repository.UserRepository;
 import com.mfsys.expense.service.AuthService;
@@ -27,10 +30,11 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
+
 
         if (!user.getPassword().equals(request.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new IncorrectPasswordException();
         }
 
         String accessToken = jwtUtil.generateToken(user.getEmail());
@@ -59,9 +63,8 @@ public class AuthServiceImpl implements AuthService {
         String email = refreshTokenService.validateRefreshToken(refreshToken);
 
         if (email == null) {
-            throw new RuntimeException("Invalid refresh token");
+            throw new InvalidRefreshTokenException();
         }
-
         String newAccessToken = jwtUtil.generateToken(email);
 
         return new LoginResponse(newAccessToken, refreshToken);
