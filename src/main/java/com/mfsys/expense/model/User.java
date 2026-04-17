@@ -1,7 +1,10 @@
 package com.mfsys.expense.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -22,4 +25,9 @@ public class User {
     private String name;
 
     private String role;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user")
+    private List<Expense> expenses;
+
 }

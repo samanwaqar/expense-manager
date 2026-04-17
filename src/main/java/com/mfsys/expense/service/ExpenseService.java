@@ -2,22 +2,28 @@ package com.mfsys.expense.service;
 
 import com.mfsys.expense.dto.DashboardResponse;
 import com.mfsys.expense.model.Expense;
+import com.mfsys.expense.model.User;
 import com.mfsys.expense.repository.ExpenseRepository;
+import com.mfsys.expense.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.security.core.context.SecurityContextHolder;
 @Service
 public class ExpenseService {
 
     private final ExpenseRepository repository;
+    private final UserRepository userRepository;
 
-    public ExpenseService(ExpenseRepository repository) {
+    public ExpenseService(ExpenseRepository repository, UserRepository userRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
+
     }
 
     // CREATE
@@ -38,6 +44,9 @@ public class ExpenseService {
                 .getAuthentication()
                 .getName();
 
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         Expense e = new Expense();
         e.setTitle(expense.getTitle());
         e.setAmount(expense.getAmount());
@@ -46,17 +55,23 @@ public class ExpenseService {
         e.setReceiptType(expense.getReceiptType());
         e.setReceiptUrl(expense.getReceiptUrl());
 
-
-        e.setUserEmail(email);
+        e.setUser(user);
 
         return repository.save(e);
     }
 
 
 
+
     // GET (FIXED - CLEAN)
     public List<Expense> getUserExpenses() {
-        return repository.findAll();
+
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return repository.findByUser(user);
     }
 
     // UPDATE (CLEAN + SAFE)
@@ -125,8 +140,10 @@ public class ExpenseService {
         String email = SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Expense> expenses = repository.findByUserEmail(email);
+        List<Expense> expenses = repository.findByUser(user);
 
         double totalAmount = expenses.stream()
                 .mapToDouble(Expense::getAmount)
@@ -149,8 +166,11 @@ public class ExpenseService {
         String email = SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Expense> expenses = repository.findByUserEmail(email);
+        List<Expense> expenses = repository.findByUser(user);
+
 
         return expenses.stream()
                 .collect(Collectors.groupingBy(

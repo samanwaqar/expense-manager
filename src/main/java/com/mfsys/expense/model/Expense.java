@@ -1,5 +1,6 @@
 package com.mfsys.expense.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,8 +29,14 @@ public class Expense {
 
     private String status;
 
-    @Column(nullable = false)
-    private String userEmail;
+//    @Column(nullable = false)
+//    private String userEmail;
+
+
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     private LocalDateTime createdAt;
 
